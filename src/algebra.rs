@@ -7,21 +7,20 @@
 
 // Unary Operators
 
-pub trait UnaryOperator<T, O = T>: Clone {
+pub trait UnaryOperator<T, O = T> {
     fn op(value: T) -> O;
 }
 
-#[derive(Copy, Clone)]
 pub struct IdendityOp;
-#[derive(Copy, Clone)]
+
 pub struct AbsoluteOp;
-#[derive(Copy, Clone)]
+
 pub struct AdditiveInverseOp;
-#[derive(Copy, Clone)]
+
 pub struct MultiplicativeInverseOp;
-#[derive(Copy, Clone)]
+
 pub struct LogicalNotOp;
-#[derive(Copy, Clone)]
+
 pub struct BitwiseNotOp;
 
 // ------------------------------------------------------------------------------
@@ -63,7 +62,6 @@ impl_abs_unsigned!(u8, u16, u32, u64);
 
 impl<T> UnaryOperator<T> for AdditiveInverseOp
 where
-    Self: Clone,
     T: std::ops::Neg<Output = T>,
 {
     fn op(value: T) -> T {
@@ -106,7 +104,6 @@ impl UnaryOperator<bool> for LogicalNotOp {
 
 impl<T> UnaryOperator<T> for BitwiseNotOp
 where
-    Self: Clone,
     T: std::ops::Not<Output = T>,
 {
     fn op(value: T) -> T {
@@ -117,13 +114,12 @@ where
 // ------------------------------------------------------------------------------
 // Binary Operators
 
-pub trait BinaryOperator<D1, D2 = D1>: Clone {
+pub trait BinaryOperator<D1, D2 = D1> {
     type Output;
 
     fn op(&self, lhs: D1, rhs: D2) -> Self::Output;
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalOr {
     _marker: std::marker::PhantomData<()>,
 }
@@ -142,7 +138,6 @@ impl BinaryOperator<bool> for LogicalOr {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalAnd {
     _marker: std::marker::PhantomData<()>,
 }
@@ -161,7 +156,6 @@ impl BinaryOperator<bool> for LogicalAnd {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalXor {
     _marker: std::marker::PhantomData<()>,
 }
@@ -180,7 +174,6 @@ impl BinaryOperator<bool> for LogicalXor {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalXnor {
     _marker: std::marker::PhantomData<()>,
 }
@@ -199,7 +192,6 @@ impl BinaryOperator<bool> for LogicalXnor {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct BitwiseOr<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -212,7 +204,6 @@ impl<D1, D2> BitwiseOr<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for BitwiseOr<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::BitOr<D2, Output = D1>,
 {
     type Output = D1;
@@ -222,7 +213,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct BitwiseAnd<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -235,7 +225,6 @@ impl<D1, D2> BitwiseAnd<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for BitwiseAnd<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::BitAnd<D2, Output = D1>,
 {
     type Output = D1;
@@ -245,7 +234,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct BitwiseXor<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -258,7 +246,6 @@ impl<D1, D2> BitwiseXor<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for BitwiseXor<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::BitXor<D2, Output = D1>,
 {
     type Output = D1;
@@ -268,7 +255,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct BitwiseXnor<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -281,7 +267,6 @@ impl<D1, D2> BitwiseXnor<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for BitwiseXnor<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::Not<Output = D1>,
     D1: std::ops::BitXor<D2, Output = D1>,
 {
@@ -292,7 +277,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Equal<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -305,7 +289,6 @@ impl<D1, D2> Equal<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for Equal<D1, D2>
 where
-    Self: Clone,
     D1: PartialEq<D2>,
 {
     type Output = bool;
@@ -315,7 +298,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct NotEqual<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -328,7 +310,6 @@ impl<D1, D2> NotEqual<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for NotEqual<D1, D2>
 where
-    Self: Clone,
     D1: PartialEq<D2>,
 {
     type Output = bool;
@@ -338,7 +319,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct GreaterThan<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -351,7 +331,6 @@ impl<D1, D2> GreaterThan<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for GreaterThan<D1, D2>
 where
-    Self: Clone,
     D1: PartialOrd<D2>,
 {
     type Output = bool;
@@ -361,7 +340,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LessThan<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -374,7 +352,6 @@ impl<D1, D2> LessThan<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for LessThan<D1, D2>
 where
-    Self: Clone,
     D1: PartialOrd<D2>,
 {
     type Output = bool;
@@ -384,7 +361,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct GreaterThanOrEqual<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -397,7 +373,6 @@ impl<D1, D2> GreaterThanOrEqual<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for GreaterThanOrEqual<D1, D2>
 where
-    Self: Clone,
     D1: PartialOrd<D2>,
 {
     type Output = bool;
@@ -407,7 +382,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LessThanOrEqual<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -420,7 +394,6 @@ impl<D1, D2> LessThanOrEqual<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for LessThanOrEqual<D1, D2>
 where
-    Self: Clone,
     D1: PartialOrd<D2>,
 {
     type Output = bool;
@@ -430,7 +403,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct First<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -443,7 +415,6 @@ impl<D1, D2> First<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for First<D1, D2>
 where
-    Self: Clone,
     D1: Clone,
 {
     type Output = D1;
@@ -453,7 +424,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Second<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -466,7 +436,6 @@ impl<D1, D2> Second<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for Second<D1, D2>
 where
-    Self: Clone,
     D2: Clone,
 {
     type Output = D2;
@@ -476,7 +445,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Minimum<D1> {
     _marker: std::marker::PhantomData<(D1, D1)>,
 }
@@ -489,8 +457,7 @@ impl<D1> Minimum<D1> {
 }
 impl<D1> BinaryOperator<D1> for Minimum<D1>
 where
-    D1: Clone,
-    D1: PartialOrd<D1>,
+    D1: Clone + PartialOrd,
 {
     type Output = D1;
 
@@ -503,7 +470,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Maximum<D1> {
     _marker: std::marker::PhantomData<(D1, D1)>,
 }
@@ -516,8 +482,7 @@ impl<D1> Maximum<D1> {
 }
 impl<D1> BinaryOperator<D1> for Maximum<D1>
 where
-    D1: Clone,
-    D1: PartialOrd<D1>,
+    D1: Clone + PartialOrd,
 {
     type Output = D1;
 
@@ -530,7 +495,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Addition<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -543,7 +507,6 @@ impl<D1, D2> Addition<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for Addition<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::Add<D2, Output = D1>,
 {
     type Output = D1;
@@ -553,7 +516,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Subtraction<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -566,7 +528,6 @@ impl<D1, D2> Subtraction<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for Subtraction<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::Sub<D2, Output = D1>,
 {
     type Output = D1;
@@ -576,7 +537,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Multiplication<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -589,7 +549,6 @@ impl<D1, D2> Multiplication<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for Multiplication<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::Mul<D2, Output = D1>,
 {
     type Output = D1;
@@ -599,7 +558,6 @@ where
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct Division<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -612,7 +570,6 @@ impl<D1, D2> Division<D1, D2> {
 }
 impl<D1, D2> BinaryOperator<D1, D2> for Division<D1, D2>
 where
-    Self: Clone,
     D1: std::ops::Div<D2, Output = D1>,
 {
     type Output = D1;
@@ -628,7 +585,7 @@ where
 // ---------------------------------------------------------------------------
 // Monoids
 
-pub trait Monoid<D>: Clone {
+pub trait Monoid<D> {
     fn identity(&self) -> D;
 
     fn operate(&self, lhs: D, rhs: D) -> D;
@@ -639,7 +596,6 @@ pub trait Monoid<D>: Clone {
 
 macro_rules! impl_monoid_def {
     ($name:ident) => {
-        #[derive(Copy, Clone)]
         pub struct $name<D> {
             _marker: std::marker::PhantomData<(D, D)>,
         }
@@ -655,10 +611,7 @@ macro_rules! impl_monoid_def {
 
 macro_rules! impl_monoid_detail {
     ($name:ident, $bin_op:ident, $domain:ty, $identity:expr) => {
-        impl Monoid<$domain> for $name<$domain>
-        where
-            Self: Clone,
-        {
+        impl Monoid<$domain> for $name<$domain> {
             fn identity(&self) -> $domain {
                 $identity
             }
@@ -751,7 +704,7 @@ impl_monoid_many!(
 );
 
 // Only works for bool
-#[derive(Copy, Clone)]
+
 pub struct LogicalOrMonoid {
     _marker: std::marker::PhantomData<()>,
 }
@@ -772,7 +725,6 @@ impl Monoid<bool> for LogicalOrMonoid {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalAndMonoid {
     _marker: std::marker::PhantomData<()>,
 }
@@ -793,7 +745,6 @@ impl Monoid<bool> for LogicalAndMonoid {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalXorMonoid {
     _marker: std::marker::PhantomData<()>,
 }
@@ -814,7 +765,6 @@ impl Monoid<bool> for LogicalXorMonoid {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalXnorMonoid {
     _marker: std::marker::PhantomData<()>,
 }
@@ -838,7 +788,7 @@ impl Monoid<bool> for LogicalXnorMonoid {
 // ---------------------------------------------------------------------------
 // Semirings
 
-pub trait Semiring<D1, D2 = D1>: Clone {
+pub trait Semiring<D1, D2 = D1> {
     // 2 types of output for operations that return values and operations that return references
     // e.g Addition: (&T, &T) -> T, Min: (&T, &T) -> &T
     type Output;
@@ -850,7 +800,6 @@ pub trait Semiring<D1, D2 = D1>: Clone {
     fn zero(&self) -> Self::Output;
 }
 
-#[derive(Copy, Clone)]
 pub struct PlusTimesSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -862,7 +811,6 @@ impl<D1, D2> PlusTimesSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MinPlusSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -874,7 +822,6 @@ impl<D1, D2> MinPlusSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MaxPlusSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -886,7 +833,6 @@ impl<D1, D2> MaxPlusSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MinTimesSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -898,7 +844,6 @@ impl<D1, D2> MinTimesSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MinMaxSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -910,7 +855,6 @@ impl<D1, D2> MinMaxSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MaxMinSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -922,7 +866,6 @@ impl<D1, D2> MaxMinSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MaxTimesSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -934,7 +877,6 @@ impl<D1, D2> MaxTimesSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct PlusMinSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -946,7 +888,6 @@ impl<D1, D2> PlusMinSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct LogicalSemiring {
     _marker: std::marker::PhantomData<()>,
 }
@@ -958,7 +899,6 @@ impl LogicalSemiring {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct AndOrSemiring {
     _marker: std::marker::PhantomData<()>,
 }
@@ -970,7 +910,6 @@ impl AndOrSemiring {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct XorAndSemiring {
     _marker: std::marker::PhantomData<()>,
 }
@@ -982,7 +921,6 @@ impl XorAndSemiring {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct XorOrSemiring {
     _marker: std::marker::PhantomData<()>,
 }
@@ -994,7 +932,6 @@ impl XorOrSemiring {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MinFirstSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -1006,7 +943,6 @@ impl<D1, D2> MinFirstSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MinSecondSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -1018,7 +954,6 @@ impl<D1, D2> MinSecondSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MaxFirstSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -1030,7 +965,6 @@ impl<D1, D2> MaxFirstSemiring<D1, D2> {
     }
 }
 
-#[derive(Copy, Clone)]
 pub struct MaxSecondSemiring<D1, D2 = D1> {
     _marker: std::marker::PhantomData<(D1, D2)>,
 }
@@ -1047,7 +981,6 @@ impl<D1, D2> MaxSecondSemiring<D1, D2> {
 
 impl<D1, D2> Semiring<D1, D2> for PlusTimesSemiring<D1, D2>
 where
-    Self: Clone,
     PlusMonoid<D1>: Monoid<D1>,
     Multiplication<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1068,7 +1001,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MinPlusSemiring<D1, D2>
 where
-    Self: Clone,
     MinMonoid<D1>: Monoid<D1>,
     Addition<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1089,7 +1021,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MaxPlusSemiring<D1, D2>
 where
-    Self: Clone,
     MaxMonoid<D1>: Monoid<D1>,
     Addition<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1110,7 +1041,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MinTimesSemiring<D1, D2>
 where
-    Self: Clone,
     MinMonoid<D1>: Monoid<D1>,
     Multiplication<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1131,7 +1061,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MinMaxSemiring<D1, D2>
 where
-    Self: Clone,
     MinMonoid<D1>: Monoid<D1>,
     Maximum<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1152,7 +1081,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MaxMinSemiring<D1, D2>
 where
-    Self: Clone,
     MaxMonoid<D1>: Monoid<D1>,
     Minimum<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1173,7 +1101,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MaxTimesSemiring<D1, D2>
 where
-    Self: Clone,
     MaxMonoid<D1>: Monoid<D1>,
     Multiplication<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1194,7 +1121,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for PlusMinSemiring<D1, D2>
 where
-    Self: Clone,
     PlusMonoid<D1>: Monoid<D1>,
     Minimum<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1215,7 +1141,6 @@ where
 
 impl Semiring<bool> for LogicalSemiring
 where
-    Self: Clone,
     LogicalOrMonoid: Monoid<bool>,
     LogicalAnd: BinaryOperator<bool, Output = bool>,
 {
@@ -1236,7 +1161,6 @@ where
 
 impl Semiring<bool> for AndOrSemiring
 where
-    Self: Clone,
     LogicalAndMonoid: Monoid<bool>,
     LogicalOr: BinaryOperator<bool, Output = bool>,
 {
@@ -1257,7 +1181,6 @@ where
 
 impl Semiring<bool> for XorAndSemiring
 where
-    Self: Clone,
     LogicalXorMonoid: Monoid<bool>,
     LogicalAnd: BinaryOperator<bool, Output = bool>,
 {
@@ -1278,7 +1201,6 @@ where
 
 impl Semiring<bool> for XorOrSemiring
 where
-    Self: Clone,
     LogicalXorMonoid: Monoid<bool>,
     LogicalOr: BinaryOperator<bool, Output = bool>,
 {
@@ -1299,7 +1221,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MinFirstSemiring<D1, D2>
 where
-    Self: Clone,
     MinMonoid<D1>: Monoid<D1>,
     First<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1320,7 +1241,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MinSecondSemiring<D1, D2>
 where
-    Self: Clone,
     MinMonoid<D1>: Monoid<D1>,
     Second<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1341,7 +1261,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MaxFirstSemiring<D1, D2>
 where
-    Self: Clone,
     MaxMonoid<D1>: Monoid<D1>,
     First<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
@@ -1362,7 +1281,6 @@ where
 
 impl<D1, D2> Semiring<D1, D2> for MaxSecondSemiring<D1, D2>
 where
-    Self: Clone,
     MaxMonoid<D1>: Monoid<D1>,
     Second<D1>: BinaryOperator<D1, D2, Output = D1>,
 {
