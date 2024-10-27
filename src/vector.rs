@@ -31,7 +31,7 @@ pub trait Vector: Clone + PartialEq + Sized {
 
 pub trait VectorUtils: Vector {
     fn iter(&self) -> impl Iterator<Item = (IndexType, &Self::Scalar)> {
-        // TODO(robert): test perf and check if it's better to change the default implementation
+        // TODO: test perf and check if it's better to change the default implementation
         (0..self.size()).filter_map(move |i| self.extract_element(i).map(|val| (i, val)).ok())
     }
 }

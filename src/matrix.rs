@@ -38,7 +38,7 @@ pub trait Matrix: Clone + PartialEq + Sized {
 
 pub trait MatrixExtra: Matrix {
     fn iter(&self) -> impl Iterator<Item = (IndexType, IndexType, &Self::Scalar)> {
-        // TODO(robert): test perf and check if it's better to change the default implementation
+        // TODO: test perf and check if it's better to change the default implementation
         (0..self.nrows())
             .flat_map(move |i| (0..self.ncols()).map(move |j| (i, j)))
             .filter_map(move |(i, j)| self.extract_element(i, j).map(|val| (i, j, val)).ok())

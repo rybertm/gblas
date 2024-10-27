@@ -120,7 +120,7 @@ pub trait MatOps: Matrix {
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
 
-    // TODO(robert): rename to `assign_udt`? (https://graphblas.org/docs/GraphBLAS_API_C_v1.3.0.pdf#table.5.5)
+    // TODO: rename to `assign_udt`? (https://graphblas.org/docs/GraphBLAS_API_C_v1.3.0.pdf#table.5.5)
     fn assign_value(
         &mut self,
         mask: Option<impl MatMask<Self>>,
@@ -318,7 +318,7 @@ pub trait VecOps: Vector {
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
 
-    // TODO(robert): rename to `assign_udt`? (https://graphblas.org/docs/GraphBLAS_API_C_v1.3.0.pdf#table.5.5)
+    // TODO: rename to `assign_udt`? (https://graphblas.org/docs/GraphBLAS_API_C_v1.3.0.pdf#table.5.5)
     fn assign_value(
         &mut self,
         mask: Option<impl VecMask<Self>>,
