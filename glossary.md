@@ -33,3 +33,6 @@ When they are significant, the problem itself is ill-conditioned and needs to be
 * Implement whole spec
 * Document everything
 * Implement `NonBlocking` mode
+* Improve domain compatibility at the type level:
+  * Add generic scalars on operations and ensure the types catch incompatible domains for each generic scalar. Current implementation narrows the different objects (vector, matrix) to same domain
+* Iterate over masks implementation of `std::ops::Index` returning `false` for out-of-bounds indexes or if it should error out (prossibly new trait, which would lose on `value[index]` for the objects)
