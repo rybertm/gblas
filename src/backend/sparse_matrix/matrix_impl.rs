@@ -10,13 +10,7 @@ use crate::{
     ApiError, ExecutionError, GblasResult,
 };
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct SparseMatrix<T> {
-    mat: Vec<Vec<(IndexType, T)>>,
-    nrows: IndexType,
-    ncols: IndexType,
-    nvals: IndexType,
-}
+use super::SparseMatrix;
 
 impl<T> SparseMatrix<T>
 where

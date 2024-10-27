@@ -5,11 +5,7 @@ use crate::{
     ApiError, ExecutionError, GblasResult,
 };
 
-#[derive(Debug, Clone, PartialEq)]
-pub struct SimpleVec<T> {
-    pub data: Vec<(IndexType, T)>,
-    pub size: IndexType,
-}
+use super::SimpleVec;
 
 impl<T> SimpleVec<T>
 where
