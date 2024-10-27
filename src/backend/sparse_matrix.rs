@@ -1,7 +1,7 @@
 use std::{cmp::Ordering, ops::Index};
 
 use crate::{
-    algebra::BinaryOperator,
+    algebra::{BinaryOperator, First},
     complement_mask::MatrixComplementMask,
     mask::MatMask,
     matrix::{Matrix, MatrixExtra},
@@ -22,20 +22,32 @@ impl<T> SparseMatrix<T>
 where
     T: Clone + PartialEq,
 {
-    pub fn set_element_dup(
+    /// Since the error for out of bounds can change
+    /// we return `None` here so the caller can decide
+    fn set_element_dup(
         &mut self,
         row: IndexType,
         col: IndexType,
         value: T,
-        dup: impl BinaryOperator<T, Output = T>,
-    ) -> GblasResult<NoValue> {
+        dup: Option<&impl BinaryOperator<T, Output = T>>,
+    ) -> Option<NoValue> {
         if row >= self.nrows || col >= self.ncols {
-            return Err(ExecutionError::IndexOutOfBounds.into());
+            return None;
         }
-        let data = self
-            .mat
-            .get_mut(row)
-            .ok_or(ExecutionError::IndexOutOfBounds)?;
+
+        let data = if let Some(data) = self.mat.get_mut(row) {
+            data
+        } else {
+            // prevents panics if e.g Mat is 5x5 and we try to set element at (3, 1)
+            // without having set any elements at row 3 or before
+            if row >= self.mat.len() {
+                self.mat.resize_with(row + 1, Vec::new);
+            }
+            self.mat.insert(row, vec![(col, value)]);
+            self.nvals += 1;
+            return Some(());
+        };
+
         if data.is_empty() {
             data.push((col, value));
             self.nvals += 1;
@@ -46,7 +58,9 @@ where
                 .enumerate()
                 .find_map(|(idx, (c, v))| match c.cmp(&col) {
                     Ordering::Equal => {
-                        value = dup.op(v.clone(), value.clone());
+                        if let Some(bin) = dup {
+                            value = bin.op(v.clone(), value.clone());
+                        }
                         Some((idx, true))
                     }
                     Ordering::Greater => Some((idx, false)),
@@ -67,7 +81,7 @@ where
             }
         }
 
-        Ok(())
+        Some(())
     }
 }
 
@@ -78,6 +92,10 @@ where
     type Scalar = T;
 
     fn new(rows: IndexType, cols: IndexType) -> GblasResult<Self> {
+        if rows == 0 || cols == 0 {
+            return Err(ApiError::InvalidValue.into());
+        }
+
         Ok(Self {
             mat: Vec::with_capacity(rows),
             nrows: rows,
@@ -94,10 +112,19 @@ where
         self.mat.reserve(rows);
 
         if rows < self.nrows {
-            self.nvals = 0;
-            for row in self.mat.iter() {
-                self.nvals += row.len();
-            }
+            self.mat = self
+                .mat
+                .iter_mut()
+                .enumerate()
+                .filter_map(|(idx, row)| {
+                    if idx < rows {
+                        Some(core::mem::take(row))
+                    } else {
+                        self.nvals -= row.len();
+                        None
+                    }
+                })
+                .collect();
         }
         self.nrows = rows;
 
@@ -119,7 +146,7 @@ where
 
     fn clear(&mut self) -> GblasResult<NoValue> {
         self.nvals = 0;
-        // TODO(robert): Should we clear the how mat vec? Probably not since the outer vec only hold row indices
+        // TODO: Should we clear the row mat vec? Probably not since the outer vec only hold row indices
         for row in self.mat.iter_mut() {
             row.clear();
         }
@@ -146,9 +173,18 @@ where
         _: IndexType,
         dup: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
     ) -> GblasResult<Self> {
+        if self.nvals > 0 {
+            return Err(ApiError::OutputNotEmpty.into());
+        }
+
         let mut s = self;
+        // TODO: check if rows, cols and values sizes match `n`
+        // TODO: try better implementation?
         for ((row, col), value) in rows.zip(cols).zip(values) {
-            s.set_element_dup(row, col, value, dup.clone())?;
+            let res = s.set_element_dup(row, col, value, Some(&dup));
+            if res.is_none() {
+                return Err(ExecutionError::IndexOutOfBounds.into());
+            }
         }
         Ok(s)
     }
@@ -159,55 +195,13 @@ where
         col: IndexType,
         value: Self::Scalar,
     ) -> GblasResult<NoValue> {
-        if row >= self.nrows || col >= self.ncols {
-            return Err(ExecutionError::IndexOutOfBounds.into());
-        }
-        let data = if let Some(data) = self.mat.get_mut(row) {
-            data
-        } else {
-            // prevents panics if e.g Mat is 5x5 and we try to set element at (3, 1)
-            // without having set any elements at row 3 or before
-            if row >= self.mat.len() {
-                self.mat.resize_with(row + 1, Vec::new);
-            }
-            self.mat.insert(row, vec![(col, value)]);
-            self.nvals += 1;
-            return Ok(());
-        };
-
-        if data.is_empty() {
-            data.push((col, value));
-            self.nvals += 1;
-        } else {
-            let found = data
-                .iter()
-                .enumerate()
-                .find_map(|(idx, (c, _))| match c.cmp(&col) {
-                    Ordering::Equal => Some((idx, true)),
-                    Ordering::Greater => Some((idx, false)),
-                    Ordering::Less => None,
-                });
-            match found {
-                Some((idx, true)) => {
-                    data[idx].1 = value;
-                }
-                Some((idx, false)) => {
-                    data.insert(idx, (col, value));
-                    self.nvals += 1;
-                }
-                None => {
-                    data.push((col, value));
-                    self.nvals += 1;
-                }
-            }
-        }
-
-        Ok(())
+        self.set_element_dup(row, col, value, Option::<&First<_>>::None)
+            .ok_or_else(|| ApiError::InvalidIndex.into())
     }
 
     fn remove_element(&mut self, row: IndexType, col: IndexType) -> GblasResult<NoValue> {
         if row >= self.nrows || col >= self.ncols {
-            return Err(ExecutionError::IndexOutOfBounds.into());
+            return Err(ApiError::InvalidIndex.into());
         }
         let data = if let Some(data) = self.mat.get_mut(row) {
             data
@@ -216,32 +210,30 @@ where
         };
 
         if data.is_empty() {
-            return Ok(());
+            Ok(())
+        } else {
+            let found = data.iter().position(|(c, _)| *c == col);
+            if let Some(idx) = found {
+                data.remove(idx);
+                self.nvals -= 1;
+            }
+            Ok(())
         }
-        let found = data
-            .iter()
-            .enumerate()
-            .find_map(|(i, (c, _))| (*c == col).then_some(i));
-        if let Some(idx) = found {
-            data.remove(idx);
-            self.nvals -= 1;
-        }
-
-        Ok(())
     }
 
     fn extract_element(&self, row: IndexType, col: IndexType) -> GblasResult<Self::Scalar> {
         if row >= self.nrows || col >= self.ncols {
-            return Err(ExecutionError::IndexOutOfBounds.into());
+            return Err(ApiError::InvalidIndex.into());
         }
-        let data = self.mat.get(row).ok_or(ExecutionError::IndexOutOfBounds)?;
+        let data = self.mat.get(row).ok_or(ApiError::NoValue)?;
 
-        let found = data
-            .iter()
-            .find_map(|(c, v)| if *c == col { Some(v.clone()) } else { None })
-            .ok_or_else(|| ApiError::NoValue.into());
-
-        found
+        if data.is_empty() {
+            Err(ApiError::NoValue.into())
+        } else {
+            data.iter()
+                .find_map(|(c, v)| if *c == col { Some(v.clone()) } else { None })
+                .ok_or_else(|| ApiError::NoValue.into())
+        }
     }
 
     fn extract_tuples(&self) -> GblasResult<(Vec<IndexType>, Vec<IndexType>, Vec<Self::Scalar>)> {
@@ -330,7 +322,10 @@ mod tests {
         assert!(mat.set_element(1, 7, 8.0).is_ok());
         assert!(mat.set_element(4, 2, 9.0).is_ok());
         assert!(mat.set_element(8, 8, 9.0).is_ok());
-        assert_eq!(mat.nvals(), 12);
+        assert!(mat.set_element(8, 2, 9.0).is_ok());
+        assert!(mat.set_element(8, 3, 9.0).is_ok());
+        assert!(mat.set_element(8, 4, 9.0).is_ok());
+        assert_eq!(mat.nvals(), 15);
         let elem = mat.extract_element(0, 0);
         assert!(elem.is_ok());
         assert_eq!(elem.unwrap(), 1.0);
@@ -355,6 +350,8 @@ mod tests {
         assert!(elem.is_err());
         let elem = mat.extract_element(8, 8);
         assert!(elem.is_err());
+
+        assert_eq!(mat.nvals(), 7);
 
         let res = mat.remove_element(1, 5);
         assert!(res.is_ok());
