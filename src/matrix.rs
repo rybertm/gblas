@@ -32,12 +32,12 @@ pub trait Matrix: Clone + PartialEq + Sized {
         value: Self::Scalar,
     ) -> GblasResult<NoValue>;
     fn remove_element(&mut self, row: IndexType, col: IndexType) -> GblasResult<NoValue>;
-    fn extract_element(&self, row: IndexType, col: IndexType) -> GblasResult<Self::Scalar>;
-    fn extract_tuples(&self) -> GblasResult<(Vec<IndexType>, Vec<IndexType>, Vec<Self::Scalar>)>;
+    fn extract_element(&self, row: IndexType, col: IndexType) -> GblasResult<&Self::Scalar>;
+    fn extract_tuples(self) -> GblasResult<(Vec<IndexType>, Vec<IndexType>, Vec<Self::Scalar>)>;
 }
 
 pub trait MatrixExtra: Matrix {
-    fn iter(&self) -> impl Iterator<Item = (IndexType, IndexType, Self::Scalar)> {
+    fn iter(&self) -> impl Iterator<Item = (IndexType, IndexType, &Self::Scalar)> {
         // TODO(robert): test perf and check if it's better to change the default implementation
         (0..self.nrows())
             .flat_map(move |i| (0..self.ncols()).map(move |j| (i, j)))

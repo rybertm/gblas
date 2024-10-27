@@ -221,7 +221,7 @@ where
         }
     }
 
-    fn extract_element(&self, row: IndexType, col: IndexType) -> GblasResult<Self::Scalar> {
+    fn extract_element(&self, row: IndexType, col: IndexType) -> GblasResult<&Self::Scalar> {
         if row >= self.nrows || col >= self.ncols {
             return Err(ApiError::InvalidIndex.into());
         }
@@ -231,21 +231,21 @@ where
             Err(ApiError::NoValue.into())
         } else {
             data.iter()
-                .find_map(|(c, v)| if *c == col { Some(v.clone()) } else { None })
+                .find_map(|(c, v)| if *c == col { Some(v) } else { None })
                 .ok_or_else(|| ApiError::NoValue.into())
         }
     }
 
-    fn extract_tuples(&self) -> GblasResult<(Vec<IndexType>, Vec<IndexType>, Vec<Self::Scalar>)> {
+    fn extract_tuples(self) -> GblasResult<(Vec<IndexType>, Vec<IndexType>, Vec<Self::Scalar>)> {
         let mut rows = Vec::with_capacity(self.nvals);
         let mut cols = Vec::with_capacity(self.nvals);
         let mut values = Vec::with_capacity(self.nvals);
 
-        for (row, data) in self.mat.iter().enumerate() {
-            for (col, value) in data.iter() {
+        for (row, data) in self.mat.into_iter().enumerate() {
+            for (col, value) in data.into_iter() {
                 rows.push(row);
-                cols.push(*col);
-                values.push(value.clone());
+                cols.push(col);
+                values.push(value);
             }
         }
 
@@ -257,11 +257,11 @@ impl<T> MatrixExtra for SparseMatrix<T>
 where
     T: Clone + PartialEq,
 {
-    fn iter(&self) -> impl Iterator<Item = (IndexType, IndexType, Self::Scalar)> {
+    fn iter(&self) -> impl Iterator<Item = (IndexType, IndexType, &Self::Scalar)> {
         self.mat
             .iter()
             .enumerate()
-            .flat_map(|(i, row)| row.iter().map(move |(j, v)| (i, *j, v.clone())))
+            .flat_map(|(i, row)| row.iter().map(move |(j, v)| (i, *j, v)))
     }
 }
 
@@ -328,16 +328,16 @@ mod tests {
         assert_eq!(mat.nvals(), 15);
         let elem = mat.extract_element(0, 0);
         assert!(elem.is_ok());
-        assert_eq!(elem.unwrap(), 1.0);
+        assert_eq!(elem.unwrap(), &1.0);
         let elem = mat.extract_element(1, 1);
         assert!(elem.is_ok());
-        assert_eq!(elem.unwrap(), 2.0);
+        assert_eq!(elem.unwrap(), &2.0);
         let elem = mat.extract_element(1, 2);
         assert!(elem.is_ok());
-        assert_eq!(elem.unwrap(), 3.0);
+        assert_eq!(elem.unwrap(), &3.0);
         let elem = mat.extract_element(1, 7);
         assert!(elem.is_ok());
-        assert_eq!(elem.unwrap(), 8.0);
+        assert_eq!(elem.unwrap(), &8.0);
         let elem = mat.extract_element(3, 3);
         assert!(elem.is_err());
 
@@ -345,7 +345,7 @@ mod tests {
         assert!(res.is_ok());
         let elem = mat.extract_element(1, 5);
         assert!(elem.is_ok());
-        assert_eq!(elem.unwrap(), 6.0);
+        assert_eq!(elem.unwrap(), &6.0);
         let elem = mat.extract_element(2, 9);
         assert!(elem.is_err());
         let elem = mat.extract_element(8, 8);
@@ -358,13 +358,13 @@ mod tests {
         let elem = mat.extract_element(1, 5);
         assert!(elem.is_err());
 
-        assert!(mat.extract_tuples().is_ok());
-
         assert!(mat[(0, 0)]);
         assert!(mat[(4, 2)]);
         assert!(!mat[(4, 3)]);
         assert!(!mat[(1, 9)]);
         assert!(!mat[(15, 15)]);
+
+        assert!(mat.extract_tuples().is_ok());
     }
 
     #[test]

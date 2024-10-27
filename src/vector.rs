@@ -21,16 +21,16 @@ pub trait Vector: Clone + PartialEq + Sized {
         indices: impl Iterator<Item = IndexType>,
         values: impl Iterator<Item = Self::Scalar>,
         n: IndexType,
-        dup: impl BinaryOperator<Self::Scalar>,
+        dup: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
     ) -> GblasResult<Self>;
     fn set_element(&mut self, index: IndexType, val: Self::Scalar) -> GblasResult<NoValue>;
     fn remove_element(&mut self, index: IndexType) -> GblasResult<NoValue>;
-    fn extract_element(&self, index: IndexType) -> GblasResult<Self::Scalar>;
-    fn extract_tuples(&self) -> GblasResult<(Vec<IndexType>, Vec<Self::Scalar>)>;
+    fn extract_element(&self, index: IndexType) -> GblasResult<&Self::Scalar>;
+    fn extract_tuples(self) -> GblasResult<(Vec<IndexType>, Vec<Self::Scalar>)>;
 }
 
 pub trait VectorUtils: Vector {
-    fn iter(&self) -> impl Iterator<Item = (IndexType, Self::Scalar)> {
+    fn iter(&self) -> impl Iterator<Item = (IndexType, &Self::Scalar)> {
         // TODO(robert): test perf and check if it's better to change the default implementation
         (0..self.size()).filter_map(move |i| self.extract_element(i).map(|val| (i, val)).ok())
     }
