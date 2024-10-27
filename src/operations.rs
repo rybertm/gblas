@@ -13,8 +13,8 @@ pub trait MatOps: Matrix {
     fn mxm(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -23,8 +23,8 @@ pub trait MatOps: Matrix {
     fn e_wise_mult_binary_op(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -33,7 +33,7 @@ pub trait MatOps: Matrix {
     fn e_wise_mult_monoid(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
@@ -43,8 +43,8 @@ pub trait MatOps: Matrix {
     fn e_wise_mult_semiring(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -53,8 +53,8 @@ pub trait MatOps: Matrix {
     fn e_wise_add_binary_op(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -63,7 +63,7 @@ pub trait MatOps: Matrix {
     fn e_wise_add_monoid(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
@@ -73,8 +73,8 @@ pub trait MatOps: Matrix {
     fn e_wise_add_semiring(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -83,7 +83,7 @@ pub trait MatOps: Matrix {
     fn extract(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         row_indices: Indices,
         col_indices: Indices,
@@ -93,7 +93,7 @@ pub trait MatOps: Matrix {
     fn assign(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         row_indices: Indices,
         col_indices: Indices,
@@ -103,7 +103,7 @@ pub trait MatOps: Matrix {
     fn assign_col(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         row_indices: Indices,
         col_index: IndexType,
@@ -113,7 +113,7 @@ pub trait MatOps: Matrix {
     fn assign_row(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         row_index: IndexType,
         col_indices: Indices,
@@ -124,7 +124,7 @@ pub trait MatOps: Matrix {
     fn assign_value(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         value: Self::Scalar,
         row_indices: Indices,
         col_indices: Indices,
@@ -134,7 +134,7 @@ pub trait MatOps: Matrix {
     fn apply(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl UnaryOperator<Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -143,8 +143,8 @@ pub trait MatOps: Matrix {
     fn apply_1st(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         value: Self::Scalar,
         a: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -153,8 +153,8 @@ pub trait MatOps: Matrix {
     fn apply_2nd(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         value: Self::Scalar,
         desc: Option<Descriptor>,
@@ -163,7 +163,7 @@ pub trait MatOps: Matrix {
     fn reduce(
         &self,
         val: &mut Self::Scalar,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
@@ -171,7 +171,7 @@ pub trait MatOps: Matrix {
     fn transpose(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
@@ -179,8 +179,8 @@ pub trait MatOps: Matrix {
     fn kronecker_binary_op(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -189,7 +189,7 @@ pub trait MatOps: Matrix {
     fn kronecker_monoid(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
@@ -199,8 +199,8 @@ pub trait MatOps: Matrix {
     fn kronecker_semiring(
         &mut self,
         mask: Option<impl MatMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         b: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -213,8 +213,8 @@ pub trait VecOps: Vector {
     fn vxm(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         a: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -223,8 +223,8 @@ pub trait VecOps: Vector {
     fn mxv(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -233,8 +233,8 @@ pub trait VecOps: Vector {
     fn e_wise_mult_binary_op(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         v: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -243,7 +243,7 @@ pub trait VecOps: Vector {
     fn e_wise_mult_monoid(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         v: &impl Vector<Scalar = Self::Scalar>,
@@ -253,8 +253,8 @@ pub trait VecOps: Vector {
     fn e_wise_mult_semiring(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         v: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -263,8 +263,8 @@ pub trait VecOps: Vector {
     fn e_wise_add_binary_op(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         v: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -273,7 +273,7 @@ pub trait VecOps: Vector {
     fn e_wise_add_monoid(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         v: &impl Vector<Scalar = Self::Scalar>,
@@ -283,8 +283,8 @@ pub trait VecOps: Vector {
     fn e_wise_add_semiring(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         v: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -293,7 +293,7 @@ pub trait VecOps: Vector {
     fn extract(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         u: &impl Vector<Scalar = Self::Scalar>,
         indices: Indices,
         desc: Option<Descriptor>,
@@ -302,7 +302,7 @@ pub trait VecOps: Vector {
     fn extract_col(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         row_indices: Indices,
         col_index: IndexType,
@@ -312,7 +312,7 @@ pub trait VecOps: Vector {
     fn assign(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         u: &impl Vector<Scalar = Self::Scalar>,
         indices: Indices,
         desc: Option<Descriptor>,
@@ -322,7 +322,7 @@ pub trait VecOps: Vector {
     fn assign_value(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         value: Self::Scalar,
         indices: Indices,
         desc: Option<Descriptor>,
@@ -331,7 +331,7 @@ pub trait VecOps: Vector {
     fn apply(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl UnaryOperator<Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -340,8 +340,8 @@ pub trait VecOps: Vector {
     fn apply_1st(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         value: Self::Scalar,
         u: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -350,8 +350,8 @@ pub trait VecOps: Vector {
     fn apply_2nd(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         u: &impl Vector<Scalar = Self::Scalar>,
         value: Self::Scalar,
         desc: Option<Descriptor>,
@@ -360,7 +360,7 @@ pub trait VecOps: Vector {
     fn reduce(
         &self,
         val: &mut Self::Scalar,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
@@ -368,8 +368,8 @@ pub trait VecOps: Vector {
     fn reduce_binary_op(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
@@ -377,7 +377,7 @@ pub trait VecOps: Vector {
     fn reduce_monoid(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         a: &impl Matrix<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -386,7 +386,7 @@ pub trait VecOps: Vector {
     fn transpose(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         a: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
     ) -> GblasResult<NoValue>;
@@ -394,8 +394,8 @@ pub trait VecOps: Vector {
     fn kronecker_binary_op(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl BinaryOperator<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl BinaryOperator<Self::Scalar, Output = Self::Scalar>,
         a: &impl Vector<Scalar = Self::Scalar>,
         b: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
@@ -404,7 +404,7 @@ pub trait VecOps: Vector {
     fn kronecker_monoid(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
         op: impl Monoid<Self::Scalar>,
         a: &impl Vector<Scalar = Self::Scalar>,
         b: &impl Vector<Scalar = Self::Scalar>,
@@ -414,8 +414,8 @@ pub trait VecOps: Vector {
     fn kronecker_semiring(
         &mut self,
         mask: Option<impl VecMask<Self>>,
-        accum: Option<impl BinaryOperator<Self::Scalar>>,
-        op: impl Semiring<Self::Scalar>,
+        accum: Option<impl BinaryOperator<Self::Scalar, Output = Self::Scalar>>,
+        op: impl Semiring<Self::Scalar, Output = Self::Scalar>,
         a: &impl Vector<Scalar = Self::Scalar>,
         b: &impl Vector<Scalar = Self::Scalar>,
         desc: Option<Descriptor>,
