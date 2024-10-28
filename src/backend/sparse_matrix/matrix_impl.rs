@@ -29,18 +29,7 @@ where
             return None;
         }
 
-        let data = if let Some(data) = self.mat.get_mut(row) {
-            data
-        } else {
-            // prevents panics if e.g Mat is 5x5 and we try to set element at (3, 1)
-            // without having set any elements at row 3 or before
-            if row >= self.mat.len() {
-                self.mat.resize_with(row + 1, Vec::new);
-            }
-            self.mat.insert(row, vec![(col, value)]);
-            self.nvals += 1;
-            return Some(());
-        };
+        let data = &mut self.mat[row];
 
         if data.is_empty() {
             data.push((col, value));
@@ -91,7 +80,7 @@ where
         }
 
         Ok(Self {
-            mat: Vec::with_capacity(rows),
+            mat: vec![Vec::new(); rows],
             nrows: rows,
             ncols: cols,
             nvals: 0,
